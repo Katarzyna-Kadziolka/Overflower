@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Overflower.Api\Overflower.Api.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="6.10.0" />
+        <PackageReference Include="AutoFixture" Version="4.18.0" />
+        <PackageReference Include="NSubstitute" Version="5.0.0" />
+    </ItemGroup>
+
+</Project>

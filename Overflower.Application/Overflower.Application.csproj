@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Overflower.Persistence\Overflower.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Requests\Products\Mappings" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
+        <PackageReference Include="Mapster" Version="7.3.0" />
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Overflower.UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Overflower.IntegrationTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+</Project>
