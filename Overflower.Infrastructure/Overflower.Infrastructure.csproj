@@ -10,4 +10,9 @@
       <ProjectReference Include="..\Overflower.Application\Overflower.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="RestSharp" Version="110.2.0" />
+      <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="110.2.0" />
+    </ItemGroup>
+
 </Project>

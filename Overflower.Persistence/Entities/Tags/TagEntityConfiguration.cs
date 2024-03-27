@@ -5,6 +5,6 @@ namespace Overflower.Persistence.Entities.Tags;
 
 public class TagEntityConfiguration : IEntityTypeConfiguration<TagEntity> {
     public void Configure(EntityTypeBuilder<TagEntity> builder) {
-        builder.HasKey(x => x.Name);
+        builder.HasKey(x => x.Id);
     }
 }
