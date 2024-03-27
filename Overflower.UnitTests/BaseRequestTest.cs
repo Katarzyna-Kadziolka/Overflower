@@ -2,7 +2,6 @@
 using Overflower.UnitTests.Factories;
 
 namespace Overflower.UnitTests; 
-
 public abstract class BaseRequestTest {
 	protected ApplicationDbContext ApplicationDbContext { get; private set; } = null!;
 

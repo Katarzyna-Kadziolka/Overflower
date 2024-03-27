@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Overflower.Persistence.Entities.Products;
 using Overflower.Persistence.Entities.Tags;
 
 namespace Overflower.Persistence;
