@@ -21,4 +21,12 @@ public class TagsController : ControllerBase {
         var result = await _mediator.Send(request, cancellationToken);
         return result;
     }
+
+    [HttpPut]
+    [ProducesResponseType(typeof(TagDto[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<TagDto[]>> Update([FromQuery] GetAllTagsQuery request,
+        CancellationToken cancellationToken) {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result;
+    }
 }

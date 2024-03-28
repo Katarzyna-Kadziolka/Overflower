@@ -12,8 +12,6 @@ public class StackOverflowClientClient : IStackOverflowClient {
         _client = new RestClient(
             "https://api.stackexchange.com/2.3", 
             configureSerialization: s => s.UseNewtonsoftJson());
-        //https://api.stackexchange.com/2.3/tags?page=1&pagesize=100&order=desc&sort=popular&site=stackoverflow
-        
     }
     public async Task<ICollection<TagResponse>> GetTagsAsync(int tagAmount) {
         var responseTasks = new List<Task<GetTagResponse>>();
