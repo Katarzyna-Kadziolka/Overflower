@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Overflower.Application.Requests.Tags.Queries;
 using Overflower.Application.Services.StackOverflow;
 using Overflower.Persistence;
 using Overflower.Persistence.Entities.Tags;
 
 namespace Overflower.Application.Requests.Tags.Commands.UpdateTags;
 
-public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand, TagDto[]> {
+public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand> {
     private readonly ApplicationDbContext _context;
     private readonly IStackOverflowClient _stackOverflowClient;
 
@@ -15,8 +14,8 @@ public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand, TagDt
         _context = context;
         _stackOverflowClient = stackOverflowClient;
     }
-    public async Task<TagDto[]> Handle(UpdateTagsCommand request, CancellationToken cancellationToken) {
-        await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [Tags]", cancellationToken: cancellationToken);
+    public async Task Handle(UpdateTagsCommand request, CancellationToken cancellationToken) {
+        await _context.Tags.ExecuteDeleteAsync(cancellationToken);
         var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
         var newTags = tagsFromApi.Select(t => new TagEntity {
             Id = Guid.NewGuid(),
@@ -28,6 +27,5 @@ public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand, TagDt
         }).ToList();
         _context.Tags.AddRange(newTags);
         await _context.SaveChangesAsync(cancellationToken);
-        return newTags.Select(t => t.ToDto()).ToArray();
     }
 }

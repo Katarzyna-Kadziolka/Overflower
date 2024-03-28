@@ -7,7 +7,6 @@ using Overflower.Tests.Shared.Seed;
 
 namespace Overflower.UnitTests.Requests.Tags.Queries.GetAllTags;
 
-[TestFixture]
 public class GetAllTagsQueryHandlerTests : BaseRequestTest {
     [Test]
     public async Task Handle_NoData_ShouldBeSuccess() {

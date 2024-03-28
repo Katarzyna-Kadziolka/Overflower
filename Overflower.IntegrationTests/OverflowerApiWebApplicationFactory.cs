@@ -14,18 +14,15 @@ using Overflower.Api;
 using Overflower.Persistence;
 using Overflower.Shared.Services.DateTimeProviders;
 using Overflower.Tests.Shared.Services.DateTimeProviders;
+using Testcontainers.PostgreSql;
 
 namespace Overflower.IntegrationTests;
 
 public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMarker> {
-	private readonly PostgreSqlTestcontainer _dbContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-	                                                             .WithDatabase(
-		                                                             new PostgreSqlTestcontainerConfiguration(
-			                                                             "postgres:14.7-alpine3.17") {
-			                                                             Database = "application",
-			                                                             Username = "postgres",
-			                                                             Password = "password"
-		                                                             })
+	private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
+	                                                             .WithDatabase("application")
+	                                                             .WithUsername("postgres")
+	                                                             .WithPassword("password")
 	                                                             .Build();
 
 
@@ -38,14 +35,14 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 	}
 
 	public async Task InitializeAsync() {
-		await _dbContainer.StartAsync();
+		await _postgreSqlContainer.StartAsync();
 		HttpClient = CreateClient();
 		await InitializeRespawner();
 	}
 
 	// ReSharper disable once IdentifierTypo
 	private async Task InitializeRespawner() {
-		_dbConnection = new NpgsqlConnection(_dbContainer.ConnectionString);
+		_dbConnection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString());
 		await _dbConnection.OpenAsync();
 		_respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions {
 			DbAdapter = DbAdapter.Postgres,
@@ -59,7 +56,7 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 	public override async ValueTask DisposeAsync() {
 		await base.DisposeAsync();
 		await _dbConnection.CloseAsync();
-		await _dbContainer.StopAsync();
+		await _postgreSqlContainer.StopAsync();
 	}
 
 
@@ -68,7 +65,7 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 
 		var config = new ConfigurationBuilder()
 		             .AddInMemoryCollection(new Dictionary<string, string?> {
-			             ["ConnectionStrings:Default"] = _dbContainer.ConnectionString
+			             ["ConnectionStrings:Default"] = _postgreSqlContainer.GetConnectionString()
 		             })
 		             .Build();
 		builder.UseConfiguration(config);

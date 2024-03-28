@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Mapster;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +15,6 @@ namespace Overflower.Application.Extensions;
 public static class IServiceCollectionExtensions {
 	public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
 		services.AddMediatR(typeof(IApplicationMarker));
-		services.AddMapper();
 		services.AddFluentValidation();
 		services.AddDbContext(configuration);
 		return services;
@@ -37,12 +34,5 @@ public static class IServiceCollectionExtensions {
 	private static void AddFluentValidation(this IServiceCollection services) {
 		services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(includeInternalTypes: true);
 		services.AddFluentValidationAutoValidation();
-	}
-
-	private static void AddMapper(this IServiceCollection services) {
-		var config = new TypeAdapterConfig();
-		config.Scan(Assembly.GetAssembly(typeof(IApplicationMarker))!);
-		services.AddSingleton(config);
-		services.AddSingleton<IMapper, ServiceMapper>();
 	}
 }

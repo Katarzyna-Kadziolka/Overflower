@@ -15,7 +15,18 @@ public class TagsControllerTests : BaseTest {
         var response = await HttpClient.GetAsync(Route);
         // Assert
         response.Should().Be200Ok();
-        var result = await response.Content.DeserializeContentAsync<IEnumerable<TagDto>>();
+        var result = await response.Content.DeserializeContentAsync<ICollection<TagDto>>();
         result.Should().BeEquivalentTo(tags);
+    }
+
+    [Test]
+    public async Task Update_WhenDataIsCorrect_ShouldBeOk() {
+        // Arrange
+        await ApplicationDbContext.SeedWithAsync<TagSeed>();
+        var tags = await ApplicationDbContext.Tags.ToListAsync();
+        // Act
+        var response = await HttpClient.PutAsync(Route, null);
+        // Assert
+        response.Should().Be200Ok();
     }
 }
