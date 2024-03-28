@@ -13,7 +13,7 @@ namespace Overflower.Application.Extensions;
 // ReSharper disable once InconsistentNaming
 public static class IServiceCollectionExtensions {
 	public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
-		services.AddMediatR(typeof(IApplicationMarker));
+		services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<IApplicationMarker>());
 		services.AddFluentValidation();
 		services.AddDbContext(configuration);
 		return services;

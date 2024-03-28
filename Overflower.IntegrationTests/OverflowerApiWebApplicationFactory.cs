@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using Respawn;
 using Overflower.Api;
+using Overflower.Application.Services.StackOverflow;
+using Overflower.IntegrationTests.Services;
 using Overflower.Persistence;
 using Overflower.Shared.Services.DateTimeProviders;
 using Overflower.Tests.Shared.Services.DateTimeProviders;
@@ -92,6 +94,8 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 		builder.ConfigureTestServices(services => {
 			services.RemoveAll<IDateTimeProvider>();
 			services.AddSingleton<IDateTimeProvider, TestDateTimeProvider>();
+			services.RemoveAll<IStackOverflowClient>();
+			services.AddScoped<IStackOverflowClient, TestStackOverflowClient>();
 		});
 	}
 }
