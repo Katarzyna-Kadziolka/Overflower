@@ -23,7 +23,6 @@ public class TagsControllerTests : BaseTest {
     public async Task Update_WhenDataIsCorrect_ShouldBeOk() {
         // Arrange
         await ApplicationDbContext.SeedWithAsync<TagSeed>();
-        var tags = await ApplicationDbContext.Tags.ToListAsync();
         // Act
         var response = await HttpClient.PutAsync(Route, null);
         // Assert

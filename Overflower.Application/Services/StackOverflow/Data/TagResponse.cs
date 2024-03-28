@@ -4,7 +4,7 @@ namespace Overflower.Application.Services.StackOverflow.Data;
 
 public class TagResponse {
     [JsonProperty("name")]
-    public string Name { get; set; }
+    public required string Name { get; set; }
     [JsonProperty("count")]
     public int Count { get; set; }
     [JsonProperty("is_required")] 

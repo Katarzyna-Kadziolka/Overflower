@@ -5,7 +5,7 @@ using Overflower.UnitTests.Factories;
 namespace Overflower.UnitTests; 
 public abstract class BaseRequestTest {
 	protected ApplicationDbContext ApplicationDbContext { get; private set; } = null!;
-	private SqliteConnection _connection;
+	private SqliteConnection? _connection;
 
 	[SetUp]
 	public void BaseSetup()
@@ -16,7 +16,7 @@ public abstract class BaseRequestTest {
 	[TearDown]
 	public virtual async Task BaseTearDown()
 	{
-		await _connection.DisposeAsync();
+		await _connection!.DisposeAsync();
 		await ApplicationDbContext.DisposeAsync();
 	}
 }

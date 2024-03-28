@@ -1,3 +1,3 @@
 ﻿namespace Overflower.Api;
 
-public interface IApiMarker { }
+public interface IApiMarker;

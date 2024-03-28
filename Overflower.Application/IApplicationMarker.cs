@@ -1,5 +1,3 @@
 ﻿namespace Overflower.Application; 
 
-public interface IApplicationMarker {
-	
-}
+public interface IApplicationMarker;
