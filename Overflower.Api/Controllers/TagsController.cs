@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Overflower.Application.Requests.Tags.Commands.UpdateTags;
 using Overflower.Application.Requests.Tags.Queries;
 using Overflower.Application.Requests.Tags.Queries.GetAllTags;
 
@@ -23,10 +24,10 @@ public class TagsController : ControllerBase {
     }
 
     [HttpPut]
-    [ProducesResponseType(typeof(TagDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<TagDto[]>> Update([FromQuery] GetAllTagsQuery request,
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Update(UpdateTagsCommand request,
         CancellationToken cancellationToken) {
-        var result = await _mediator.Send(request, cancellationToken);
-        return result;
+        await _mediator.Send(request, cancellationToken);
+        return Ok();
     }
 }
