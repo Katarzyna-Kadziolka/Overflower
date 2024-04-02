@@ -7,7 +7,7 @@ using Overflower.Persistence.Entities.Tags;
 
 namespace Overflower.Application.Requests.Tags.Queries.GetAllTags;
 
-public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResult> {
+public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResult<TagDto>> {
     private readonly ApplicationDbContext _context;
     private readonly IStackOverflowClient _stackOverflowClient;
 
@@ -15,7 +15,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
         _context = context;
         _stackOverflowClient = stackOverflowClient;
     }
-    public async Task<PageResult> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
+    public async Task<PageResult<TagDto>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
         var tagsCount = _context.Tags.Count();
         if (tagsCount < 1_000) {
             var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
@@ -36,7 +36,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
         if (tagsCount % request.PageSize != 0) totalPages++;
 
         if (request.Page > totalPages)
-            return new PageResult {
+            return new PageResult<TagDto> {
                 CurrentPage = request.Page,
                 TotalPages = totalPages,
                 Items = new List<TagDto>()
@@ -55,7 +55,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             .ToListAsync(cancellationToken);
 
 
-        return new PageResult {
+        return new PageResult<TagDto> {
             Items = tags,
             CurrentPage = request.Page,
             TotalPages = totalPages
