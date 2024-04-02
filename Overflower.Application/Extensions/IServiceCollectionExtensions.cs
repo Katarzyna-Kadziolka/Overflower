@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Globalization;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public static class IServiceCollectionExtensions {
 	public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
 		services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<IApplicationMarker>());
 		services.AddFluentValidation();
+		ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 		services.AddDbContext(configuration);
 		return services;
 	}
