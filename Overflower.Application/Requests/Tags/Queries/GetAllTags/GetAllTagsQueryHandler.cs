@@ -29,7 +29,18 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             }).ToList();
             _context.Tags.AddRange(newTags);
             await _context.SaveChangesAsync(cancellationToken);
+            tagsCount = _context.Tags.Count();
         }
+        
+        var totalPages = tagsCount / request.PageSize;
+        if (tagsCount % request.PageSize != 0) totalPages++;
+
+        if (request.Page > totalPages)
+            return new PageResult {
+                CurrentPage = request.Page,
+                TotalPages = totalPages,
+                Items = new List<TagDto>()
+            };
 
         IQueryable<TagEntity> query = _context.Tags;
         if (request.TagSortBy == TagSortBy.Name) {
@@ -37,9 +48,12 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             else query = query.OrderByDescending(o => o.Name);
         }
 
-        var tags = await query.Skip(request.PageSize * request.Page - 1).Take(request.PageSize).Select(t => t.ToDto()).ToListAsync(cancellationToken);
-        var totalPages = tagsCount / request.PageSize;
-        if (tagsCount % request.PageSize != 0) totalPages++;
+        var tags = await query
+            .Skip(request.PageSize * request.Page - 1)
+            .Take(request.PageSize)
+            .Select(t => t.ToDto())
+            .ToListAsync(cancellationToken);
+
 
         return new PageResult {
             Items = tags,

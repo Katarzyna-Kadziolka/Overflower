@@ -7,5 +7,5 @@ public class GetAllTagsQuery : IRequest<PageResult>, IPaging {
     public required int Page { get; set; }
     public required int PageSize { get; set; }
     public TagSortBy TagSortBy { get; set; } = TagSortBy.None;
-    public SortingOrder SortingOrder { get; set; } = SortingOrder.Descending;
+    public SortingOrder SortingOrder { get; set; } = SortingOrder.Ascending;
 }

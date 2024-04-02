@@ -1,6 +1,4 @@
 ﻿using Overflower.Application.Paging;
-using Overflower.Application.Requests.Tags;
-using Overflower.Application.Requests.Tags.Queries;
 using Overflower.Tests.Shared.Seed;
 
 namespace Overflower.IntegrationTests.Controllers;
