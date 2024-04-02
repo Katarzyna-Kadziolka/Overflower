@@ -12,14 +12,18 @@ public class GetAllTagsQueryHandlerTests : BaseRequestTest {
     public async Task Handle_NoData_ShouldBeSuccess() {
         // Arrange
         await ApplicationDbContext.SeedWithAsync<TagSeed>();
-        var tags = await ApplicationDbContext.Tags.ToListAsync();
-        var request = new GetAllTagsQuery();
+        var tags = await ApplicationDbContext.Tags.Take(50).ToListAsync();
+        var request = new GetAllTagsQuery {
+            Page = 1,
+            PageSize = 50
+        };
         var stackOverflowClient = Substitute.For<IStackOverflowClient>();
         var sut = new GetAllTagsQueryHandler(ApplicationDbContext, stackOverflowClient);
         // Act
         var result = await sut.Handle(request, CancellationToken.None);
         // Assert
-        result.Should().HaveSameCount(tags);
-        result.Should().BeEquivalentTo(tags);
+        result.CurrentPage.Should().Be(1);
+        result.Items.Should().HaveCount(50);
+        result.Items.Should().BeEquivalentTo(tags);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Overflower.Application.Paging;
 using Overflower.Application.Requests.Tags.Commands.UpdateTags;
-using Overflower.Application.Requests.Tags.Queries;
 using Overflower.Application.Requests.Tags.Queries.GetAllTags;
 
 namespace Overflower.Api.Controllers;
@@ -16,8 +16,8 @@ public class TagsController : ControllerBase {
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(TagDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<TagDto[]>> GetAll([FromQuery] GetAllTagsQuery request,
+    [ProducesResponseType(typeof(PageResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PageResult>> GetAll([FromQuery] GetAllTagsQuery request,
         CancellationToken cancellationToken) {
         var result = await _mediator.Send(request, cancellationToken);
         return result;

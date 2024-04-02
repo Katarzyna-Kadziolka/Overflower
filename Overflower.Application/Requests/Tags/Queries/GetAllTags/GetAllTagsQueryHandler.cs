@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Overflower.Application.Paging;
 using Overflower.Application.Services.StackOverflow;
 using Overflower.Persistence;
 using Overflower.Persistence.Entities.Tags;
 
 namespace Overflower.Application.Requests.Tags.Queries.GetAllTags;
 
-public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, TagDto[]> {
+public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResult> {
     private readonly ApplicationDbContext _context;
     private readonly IStackOverflowClient _stackOverflowClient;
 
@@ -14,9 +15,9 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, TagDto[]>
         _context = context;
         _stackOverflowClient = stackOverflowClient;
     }
-    public async Task<TagDto[]> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
-        var tags = await _context.Tags.ToListAsync(cancellationToken);
-        if (tags.Count < 1_000) {
+    public async Task<PageResult> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
+        var tagsCount = _context.Tags.Count();
+        if (tagsCount < 1_000) {
             var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
             var newTags = tagsFromApi.Select(t => new TagEntity {
                 Id = Guid.NewGuid(),
@@ -28,9 +29,22 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, TagDto[]>
             }).ToList();
             _context.Tags.AddRange(newTags);
             await _context.SaveChangesAsync(cancellationToken);
-            tags = newTags;
         }
-        
-        return tags.Select(t => t.ToDto()).ToArray();
+
+        IQueryable<TagEntity> query = _context.Tags;
+        if (request.TagSortBy == TagSortBy.Name) {
+            if (request.SortingOrder == SortingOrder.Ascending) query = query.OrderBy(o => o.Name);
+            else query = query.OrderByDescending(o => o.Name);
+        }
+
+        var tags = await query.Skip(request.PageSize * request.Page - 1).Take(request.PageSize).Select(t => t.ToDto()).ToListAsync(cancellationToken);
+        var totalPages = tagsCount / request.PageSize;
+        if (tagsCount % request.PageSize != 0) totalPages++;
+
+        return new PageResult {
+            Items = tags,
+            CurrentPage = request.Page,
+            TotalPages = totalPages
+        };
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Overflower.Application.Requests.Tags.Queries;
+﻿namespace Overflower.Application.Requests.Tags;
 
 public class TagDto {
     public Guid Id { get; set; }

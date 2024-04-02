@@ -1,4 +1,6 @@
-﻿using Overflower.Application.Requests.Tags.Queries;
+﻿using Overflower.Application.Paging;
+using Overflower.Application.Requests.Tags;
+using Overflower.Application.Requests.Tags.Queries;
 using Overflower.Tests.Shared.Seed;
 
 namespace Overflower.IntegrationTests.Controllers;
@@ -15,8 +17,8 @@ public class TagsControllerTests : BaseTest {
         var response = await HttpClient.GetAsync(Route);
         // Assert
         response.Should().Be200Ok();
-        var result = await response.Content.DeserializeContentAsync<ICollection<TagDto>>();
-        result.Should().BeEquivalentTo(tags);
+        var result = await response.Content.DeserializeContentAsync<PageResult>();
+        result.Items.Should().BeEquivalentTo(tags);
     }
 
     [Test]

@@ -1,6 +1,6 @@
 ﻿using Overflower.Persistence.Entities.Tags;
 
-namespace Overflower.Application.Requests.Tags.Queries;
+namespace Overflower.Application.Requests.Tags;
 
 public static class TagMapper {
     public static TagDto ToDto(this TagEntity tag) {
