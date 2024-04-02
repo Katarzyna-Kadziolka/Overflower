@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Overflower.Application.Paging;
 using Overflower.Application.Requests.Tags;
@@ -127,6 +128,29 @@ public class GetAllTagsQueryHandlerTests : BaseRequestTest {
         // Assert
         result.CurrentPage.Should().Be(expectedPage);
         result.Items.Should().BeEmpty();
+        result.TotalPages.Should().Be(expectedTotalPages);
+    }
+    
+    [Test]
+    public async Task Handle_Percentage_ShouldReturnPageResult() {
+        // Arrange
+        await ApplicationDbContext.SeedWithAsync<TagSeed>();
+        const int expectedTotalPages = 20;
+        const int expectedItemsCount = 50;
+        const int expectedPage = 1;
+        var request = new GetAllTagsQuery {
+            Page = expectedPage,
+            PageSize = expectedItemsCount
+        };
+        var stackOverflowClient = Substitute.For<IStackOverflowClient>();
+        var sut = new GetAllTagsQueryHandler(ApplicationDbContext, stackOverflowClient);
+        var totalCount = await ApplicationDbContext.Tags.SumAsync(x => (long) x.Count, CancellationToken.None);
+        // Act
+        var result = await sut.Handle(request, CancellationToken.None);
+        // Assert
+        result.CurrentPage.Should().Be(expectedPage);
+        result.Items.Should().HaveCount(expectedItemsCount);
+        result.Items.Should().Contain(x => Math.Abs(x.PercentageShare - (double) x.Count / totalCount * 100) < 0.01);
         result.TotalPages.Should().Be(expectedTotalPages);
     }
 }

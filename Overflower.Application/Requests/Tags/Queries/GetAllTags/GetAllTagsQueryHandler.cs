@@ -48,13 +48,13 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             else query = query.OrderByDescending(o => o.Name);
         }
 
+        var totalTagCount = await _context.Tags.SumAsync(x => (long) x.Count, cancellationToken);
         var tags = await query
             .Skip(request.PageSize * request.Page - 1)
             .Take(request.PageSize)
-            .Select(t => t.ToDto())
+            .Select(t => t.ToDto(totalTagCount))
             .ToListAsync(cancellationToken);
-
-
+        
         return new PageResult<TagDto> {
             Items = tags,
             CurrentPage = request.Page,

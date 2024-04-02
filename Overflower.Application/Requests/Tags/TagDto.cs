@@ -7,4 +7,5 @@ public class TagDto {
     public bool IsRequired { get; set; }
     public bool IsModeratorOnly { get; set; }
     public bool HasSynonyms { get; set; }
+    public double PercentageShare { get; set; }
 }

@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Overflower.Application.Paging;
 using Overflower.Application.Requests.Tags;
 using Overflower.Application.Requests.Tags.Commands.UpdateTags;
