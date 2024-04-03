@@ -8,7 +8,6 @@ WORKDIR /src
 COPY ["Overflower.Api/Overflower.Api.csproj", "Overflower.Api/"]
 COPY ["Overflower.Application/Overflower.Application.csproj", "Overflower.Application/"]
 COPY ["Overflower.Persistence/Overflower.Persistence.csproj", "Overflower.Persistence/"]
-COPY ["Overflower.Shared/Overflower.Shared.csproj", "Overflower.Shared/"]
 COPY ["Overflower.Infrastructure/Overflower.Infrastructure.csproj", "Overflower.Infrastructure/"]
 RUN dotnet restore "Overflower.Api/Overflower.Api.csproj"
 COPY . .
