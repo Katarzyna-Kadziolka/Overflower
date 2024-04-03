@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Overflower.Application.Extensions;
 using Overflower.Application.Paging;
 using Overflower.Application.Services.StackOverflow;
 using Overflower.Persistence;
@@ -18,17 +19,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
     public async Task<PageResult<TagDto>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
         var tagsCount = _context.Tags.Count();
         if (tagsCount < 1_000) {
-            var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
-            var newTags = tagsFromApi.Select(t => new TagEntity {
-                Id = Guid.NewGuid(),
-                Name = t.Name,
-                Count = t.Count,
-                HasSynonyms = t.HasSynonyms,
-                IsRequired = t.IsRequired,
-                IsModeratorOnly = t.IsModeratorOnly
-            }).ToList();
-            _context.Tags.AddRange(newTags);
-            await _context.SaveChangesAsync(cancellationToken);
+            await SeedData(cancellationToken);
             tagsCount = _context.Tags.Count();
         }
         
@@ -50,8 +41,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
 
         var totalTagCount = await _context.Tags.SumAsync(x => (long) x.Count, cancellationToken);
         var tags = await query
-            .Skip(request.PageSize * request.Page - 1)
-            .Take(request.PageSize)
+            .GetPage(request.Page, request.PageSize)
             .Select(t => t.ToDto(totalTagCount))
             .ToListAsync(cancellationToken);
         
@@ -60,5 +50,19 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             CurrentPage = request.Page,
             TotalPages = totalPages
         };
+    }
+
+    private async Task SeedData(CancellationToken cancellationToken) {
+        var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
+        var newTags = tagsFromApi.Select(t => new TagEntity {
+            Id = Guid.NewGuid(),
+            Name = t.Name,
+            Count = t.Count,
+            HasSynonyms = t.HasSynonyms,
+            IsRequired = t.IsRequired,
+            IsModeratorOnly = t.IsModeratorOnly
+        }).ToList();
+        _context.Tags.AddRange(newTags);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
