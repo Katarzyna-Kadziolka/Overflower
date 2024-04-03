@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Linq.Expressions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Overflower.Application.Extensions;
 using Overflower.Application.Paging;
@@ -17,26 +18,19 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
         _stackOverflowClient = stackOverflowClient;
     }
     public async Task<PageResult<TagDto>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
-        var tagsCount = _context.Tags.Count();
+        var tagsCount = await _context.Tags.CountAsync(cancellationToken);
         if (tagsCount < 1_000) {
-            await SeedData(cancellationToken);
-            tagsCount = _context.Tags.Count();
+            var newTags = await GetTagsFromStackOverflowAsync(cancellationToken);
+            _context.Tags.AddRange(newTags);
+            await _context.SaveChangesAsync(cancellationToken);
+            tagsCount += newTags.Count;
         }
         
-        var totalPages = tagsCount / request.PageSize;
-        if (tagsCount % request.PageSize != 0) totalPages++;
-
-        if (request.Page > totalPages)
-            return new PageResult<TagDto> {
-                CurrentPage = request.Page,
-                TotalPages = totalPages,
-                Items = new List<TagDto>()
-            };
+        var totalPages = GetTotalPages(request, tagsCount);
 
         IQueryable<TagEntity> query = _context.Tags;
-        if (request.TagSortBy == TagSortBy.Name) {
-            if (request.SortingOrder == SortingOrder.Ascending) query = query.OrderBy(o => o.Name);
-            else query = query.OrderByDescending(o => o.Name);
+        if (request.TagSortBy != TagSortBy.None) {
+            query = OrderBy(request, query);
         }
 
         var totalTagCount = await _context.Tags.SumAsync(x => (long) x.Count, cancellationToken);
@@ -52,7 +46,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
         };
     }
 
-    private async Task SeedData(CancellationToken cancellationToken) {
+    private async Task<List<TagEntity>> GetTagsFromStackOverflowAsync(CancellationToken cancellationToken) {
         var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
         var newTags = tagsFromApi.Select(t => new TagEntity {
             Id = Guid.NewGuid(),
@@ -62,7 +56,31 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
             IsRequired = t.IsRequired,
             IsModeratorOnly = t.IsModeratorOnly
         }).ToList();
-        _context.Tags.AddRange(newTags);
-        await _context.SaveChangesAsync(cancellationToken);
+        return newTags;
+    }
+
+    private static int GetTotalPages(GetAllTagsQuery request, int tagsCount) {
+        var totalPages = tagsCount / request.PageSize;
+        if (tagsCount % request.PageSize != 0) totalPages++;
+        return totalPages;
+    }
+
+    private static IQueryable<TagEntity> OrderBy(GetAllTagsQuery request, IQueryable<TagEntity> query) {
+        if (request.SortingOrder == SortingOrder.Ascending) 
+            query = query.OrderBy(SortBy(request.TagSortBy));
+        else 
+            query = query.OrderByDescending(SortBy(request.TagSortBy));
+        return query;
+    }
+
+    private static Expression<Func<TagEntity, object>> SortBy(TagSortBy sortBy) {
+        switch (sortBy) {
+            case TagSortBy.None:
+                return o => o;
+            case TagSortBy.Name:
+                return o => o.Name;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null);
+        }
     }
 }
