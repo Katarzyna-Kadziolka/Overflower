@@ -12,7 +12,6 @@ using Overflower.Application.Services.StackOverflow;
 using Overflower.IntegrationTests.Services;
 using Overflower.Persistence;
 using Overflower.Shared.Services.DateTimeProviders;
-using Overflower.Tests.Shared.Services.DateTimeProviders;
 using Testcontainers.PostgreSql;
 
 namespace Overflower.IntegrationTests;
@@ -68,12 +67,7 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 		             })
 		             .Build();
 		builder.UseConfiguration(config);
-
-		// Doesn't work in .Net 6: https://github.com/dotnet/aspnetcore/issues/37680
-		// builder.ConfigureAppConfiguration((configBuilder) =>
-		// {
-		//     configBuilder.AddInMemoryCollection();
-		// });
+		
 		base.ConfigureWebHost(builder);
 		builder.ConfigureAppConfiguration(configBuilder => {
 			configBuilder.AddInMemoryCollection(
@@ -92,8 +86,6 @@ public class OverflowerApiWebApplicationFactory : WebApplicationFactory<IApiMark
 		});
 
 		builder.ConfigureTestServices(services => {
-			services.RemoveAll<IDateTimeProvider>();
-			services.AddSingleton<IDateTimeProvider, TestDateTimeProvider>();
 			services.RemoveAll<IStackOverflowClient>();
 			services.AddScoped<IStackOverflowClient, TestStackOverflowClient>();
 		});

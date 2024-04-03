@@ -6,7 +6,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Overflower.Api.Configuration.Swagger;
 
-// REF: https://github.com/dotnet/aspnet-api-versioning/blob/main/examples/AspNetCore/WebApi/OpenApiExample/ConfigureSwaggerOptions.cs
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;

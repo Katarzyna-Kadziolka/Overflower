@@ -7,7 +7,6 @@ using Overflower.Api.Configuration.ServicesValidation;
 using Overflower.Api.Configuration.Swagger;
 using Overflower.Application.Extensions;
 using Overflower.Infrastructure.Extensions;
-using Overflower.Shared.Extensions;
 
 Log.Logger = new LoggerConfiguration()
              .WriteTo.Console()
@@ -37,7 +36,6 @@ void RunApplication() {
 	                                     .WriteTo.Console()
 	                                     .ReadFrom.Configuration(ctx.Configuration));
 	// Add services to the container.
-	builder.Services.AddShared(builder.Configuration);
 	builder.Services.AddApplication(builder.Configuration);
 	builder.Services.AddInfrastructure(builder.Configuration);
 	builder.Services.AddHealthChecks(builder.Configuration, builder.Environment);
