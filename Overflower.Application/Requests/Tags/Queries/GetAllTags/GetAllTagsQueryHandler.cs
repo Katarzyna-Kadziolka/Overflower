@@ -20,7 +20,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
     public async Task<PageResult<TagDto>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken) {
         var tagsCount = await _context.Tags.CountAsync(cancellationToken);
         if (tagsCount < 1_000) {
-            var newTags = await GetTagsFromStackOverflowAsync(cancellationToken);
+            var newTags = await GetTagsFromStackOverflowAsync();
             _context.Tags.AddRange(newTags);
             await _context.SaveChangesAsync(cancellationToken);
             tagsCount += newTags.Count;
@@ -46,7 +46,7 @@ public class GetAllTagsQueryHandler : IRequestHandler<GetAllTagsQuery, PageResul
         };
     }
 
-    private async Task<List<TagEntity>> GetTagsFromStackOverflowAsync(CancellationToken cancellationToken) {
+    private async Task<List<TagEntity>> GetTagsFromStackOverflowAsync() {
         var tagsFromApi = await _stackOverflowClient.GetTagsAsync(1_000);
         var newTags = tagsFromApi.Select(t => new TagEntity {
             Id = Guid.NewGuid(),

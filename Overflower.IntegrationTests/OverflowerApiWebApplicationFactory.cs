@@ -11,7 +11,6 @@ using Overflower.Api;
 using Overflower.Application.Services.StackOverflow;
 using Overflower.IntegrationTests.Services;
 using Overflower.Persistence;
-using Overflower.Shared.Services.DateTimeProviders;
 using Testcontainers.PostgreSql;
 
 namespace Overflower.IntegrationTests;
